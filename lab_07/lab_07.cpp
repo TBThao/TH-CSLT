@@ -109,6 +109,7 @@ int* copyArray(int *a, int n){
 }
 
 int* countEvens(int *arr, int n, int *evens){
+    *evens = 0;
     for(int i = 0; i < n; i++){
         if(arr[i]%2 == 0){
             (*evens)++;
@@ -118,24 +119,123 @@ int* countEvens(int *arr, int n, int *evens){
 }
 
 int* generateEvenArray(int *arr, int n, int *count){
-    
+    int *ans = new int[*count+1];
+    int p = 0;
+    for(int i = 0; i < n; i++){
+        if(arr[i]%2 == 0){
+            ans[p] = arr[i];
+            p++;
+        }
+    }
+    return ans;
+}
+
+int* findLargestSumSubarray(int *a, int n, int &largestSum, int &subarrayLength){
+    int *p = nullptr;
+
+    for(int i = 0; i < n; i++){
+        int sum = a[i];
+        for(int j = i+1; j < n; j++){
+            sum+=a[j];
+            if(sum > largestSum){
+                subarrayLength = j-i+1;
+                p = (a+i);
+                largestSum = sum;
+            }
+        }
+    }
+    return p;
+}
+
+int* findLongestAscendingSubarray(int *a, int n, int &subarrayLength){
+    int *p = nullptr;
+    int cnt = 1, start = 0, mx = 0;
+    for(int i = 1; i < n; i++){
+        if(a[i]>a[i-1]){
+            cnt++;
+        }
+        else{
+            start = i;
+            cnt = 1;
+        }
+        if(cnt > mx){
+            mx = cnt;
+            p = (a+start);
+        }
+    }
+    subarrayLength = mx;
+    return p;
+}
+void swapArrays(int *&a, int *&b, int &na, int &nb){
+    int loop = (na>nb)? na:nb;
+    int *aa = new int[nb];
+    int *bb = new int[na];
+    for(int i = 0; i < loop; i++){
+        int tmp = *(a+i);
+        *(aa+i) = *(b+i);
+        *(bb+i) = tmp;
+    }
+    int tmp = na;
+    na = nb;
+    nb = tmp;
+    a = aa;
+    b = bb;
+}
+
+int* concatenateTwoArrays(int *a, int *b, int na, int nb){
+    int *p = new int[na+nb];
+    for(int i = 0; i < na+nb; i++){
+        if(i < na) *(p+i) = *(a+i);
+        else *(p+i) = *(b+ (i-na));
+    }
+    return p;
+}
+
+int* mergeTwoArrays(int *a, int *b, int na, int nb, int &nc){
+    nc = na+nb;
+    int *p = concatenateTwoArrays(a, b, na, nb);
+    for(int i = 0; i < nc; i++){
+        for(int j = i+1; j < nc; j++){
+            if(p[i] > p[j]){
+                int tmp = p[i];
+                p[i] = p[j];
+                p[j] = tmp;
+            }
+        }
+    }
+    return p;
+}
+
+void generateRandomMatrix(int **&A, int &m, int &n){
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            A[i][j] = rand()%101;
+        }
+    }
 }
 // END TODO
-#include <fstream>
+
 int main() {
 
     // TODO
     freopen("test.inp", "r", stdin);
     freopen("test.out", "w", stdout);
-    int *a = nullptr;
-    int n = 0;
-    inputArray(a, n);
-    int cnt = 0;
-    int *p = countEvens(a, n, &cnt);
-    cout << *p;
-    // printArray(a, n);
-    // printArray(a, n);
-    delete []a;
+
+    srand(time(NULL));
+    int n, m;
+    cin >> n >> m;
+    int **a = new int*[n];
+    for(int i = 0; i < n; i++){
+        *(a+i) = new int[m];
+    }
+    generateRandomMatrix(a, m, n);
+
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            cout << a[i][j] << " ";
+        }
+        cout << endl;
+    }
     // END TODO
 
     return 0;
